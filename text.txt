@@ -1,0 +1,3 @@
+Since we are making a chat app, and want users to see the messages in real time,
+we decided to use fire base as the backend
+Because it makes use of websocket technology in order to make data transfer very fast
