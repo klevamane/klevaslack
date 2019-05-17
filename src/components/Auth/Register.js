@@ -17,14 +17,53 @@ class Register extends Component {
       username: '',
       email: '',
       password: '',
-      passwordConfirmation: ''
+      passwordConfirmation: '',
+      errors: []
   };
+
+
+  isFormEmpty = ({ username, email, password, passwordConfirmation}) => {
+    // if we have a length of 0 for any of these input, we would return true
+    // indicating that our form is not entirely filled up
+      return !username.length || !email.length || !password.length || !passwordConfirmation;
+  } 
+
+  isPassowrdValid = ({ password, passwordConfirmation }) => {
+      if(password.length < 6 || passwordConfirmation < 6 ) {
+          return false;
+      } else if(password !== passwordConfirmation) {
+          return false;
+      } else {
+          return true;
+      }
+
+  }
+
+  isFormValid = () => {
+      let errors = [];
+      let error;
+
+      if(this.isFormEmpty(this.state)) {
+          error = { message: 'Fill in all fields' };
+          this.setState({ errors: errors.concat(error) })
+          return false;
+          // return false indicating that we shouldn't execute handle submit error
+      } else if (!this.isPassowrdValid(this.state)) {
+          error = { message: 'Password is invalid'};
+          this.setState({ errors: errors.concat(error)})
+          return false; 
+      } else {
+          // valid 
+          return true;
+      }
+  }
 
   handleChange = (event) => {
       this.setState({ [event.target.name]: event.target.value })
   }
   
   handleSubmit = (event) => {
+      if(this.isFormValid()) {
       event.preventDefault();
       firebase
         .auth()
@@ -35,8 +74,12 @@ class Register extends Component {
         .catch(err => {
             console.error(err);
         })
-        
+    }
   }
+
+  displayErrors = (errors) => errors.map((error, index) => <p key={index}>{error.message}</p>)
+
+  
 
   render() {
     //   the purpose of passing a the value of a given input back to the input is
@@ -86,7 +129,7 @@ class Register extends Component {
 
               <Form.Input
                 fluid
-                name="passwordConfrimation"
+                name="passwordConfirmation"
                 icon="repeat"
                 iconPosition="left"
                 placeholder="passwordConfrimation"
@@ -100,6 +143,13 @@ class Register extends Component {
               </Button>
             </Segment>
           </Form>
+          {/* if errors exist then show errors */}
+          {this.state.errors.length > 0 && (
+              <Message error>
+              <h3>Error</h3>
+              {this.displayErrors(this.state.errors)}
+              </Message>
+          )}
           <Message>
             Already a user? <Link to="/login">Login</Link>
           </Message>
