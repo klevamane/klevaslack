@@ -8,7 +8,7 @@ import {
   Header,
   Message,
   Icon,
-  Segment
+  Segment,
 } from "semantic-ui-react";
 
 import firebase from "../../firebase";
