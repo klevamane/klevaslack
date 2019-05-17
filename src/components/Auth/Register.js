@@ -10,13 +10,38 @@ import {
   Segment
 } from "semantic-ui-react";
 
-class Register extends Component {
-  state = {};
+import firebase from '../../firebase';
 
-  // handleChange = (e) ={
-  //     // console.log('welcome')
-  // }
+class Register extends Component {
+  state = {
+      username: '',
+      email: '',
+      password: '',
+      passwordConfirmation: ''
+  };
+
+  handleChange = (event) => {
+      this.setState({ [event.target.name]: event.target.value })
+  }
+  
+  handleSubmit = (event) => {
+      event.preventDefault();
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.state.email, this.state.password)
+        .then(createdUser => {
+            console.log(createdUser);
+        })
+        .catch(err => {
+            console.error(err);
+        })
+        
+  }
+
   render() {
+    //   the purpose of passing a the value of a given input back to the input is
+    //   enable easy form clearance
+    const { username, email, password, passwordConfirmation } = this.state;
     return (
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: 450 }}>
@@ -24,7 +49,7 @@ class Register extends Component {
             <Icon name="users" color="orange" />
             Register for KlevaChat
           </Header>
-          <Form size="large">
+          <Form size="large" onSubmit={this.handleSubmit}>
             <Segment stacked>
               <Form.Input
                 fluid
@@ -34,6 +59,7 @@ class Register extends Component {
                 placeholder="Username"
                 onChange={this.handleChange}
                 type="text"
+                value={username}
               />
 
               <Form.Input
@@ -44,6 +70,7 @@ class Register extends Component {
                 placeholder="email"
                 onChange={this.handleChange}
                 type="email"
+                value={email}
               />
 
               <Form.Input
@@ -54,6 +81,7 @@ class Register extends Component {
                 placeholder="password"
                 onChange={this.handleChange}
                 type="password"
+                password={password}
               />
 
               <Form.Input
@@ -64,6 +92,7 @@ class Register extends Component {
                 placeholder="passwordConfrimation"
                 onChange={this.handleChange}
                 type="password"
+                value={passwordConfirmation}
               />
 
               <Button color="orange" fluid size="large">
