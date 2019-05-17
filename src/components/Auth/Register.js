@@ -18,7 +18,8 @@ class Register extends Component {
       email: '',
       password: '',
       passwordConfirmation: '',
-      errors: []
+      errors: [],
+      loading: false
   };
 
 
@@ -63,28 +64,34 @@ class Register extends Component {
   }
   
   handleSubmit = (event) => {
-      if(this.isFormValid()) {
       event.preventDefault();
+      if(this.isFormValid()) {
+          this.setState({ errors: [], loading: true })
       firebase
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(createdUser => {
+            this.setState({ loading: false })
             console.log(createdUser);
         })
         .catch(err => {
             console.error(err);
+            this.setState({ errors: this.state.errors.concat(err), loading: false });  
         })
     }
   }
 
   displayErrors = (errors) => errors.map((error, index) => <p key={index}>{error.message}</p>)
 
+  handleInputError = (errors, inputName) => {
+    return errors.some(error => error.message.toLowerCase().includes(inputName)) ? 'error': ''
+  }
   
 
   render() {
     //   the purpose of passing a the value of a given input back to the input is
     //   enable easy form clearance
-    const { username, email, password, passwordConfirmation } = this.state;
+    const { username, email, password, passwordConfirmation, errors, loading } = this.state;
     return (
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: 450 }}>
@@ -114,6 +121,7 @@ class Register extends Component {
                 onChange={this.handleChange}
                 type="email"
                 value={email}
+                className={this.handleInputError(errors, 'email')}
               />
 
               <Form.Input
@@ -125,6 +133,7 @@ class Register extends Component {
                 onChange={this.handleChange}
                 type="password"
                 password={password}
+                className={this.handleInputError(errors, 'password')}
               />
 
               <Form.Input
@@ -136,18 +145,19 @@ class Register extends Component {
                 onChange={this.handleChange}
                 type="password"
                 value={passwordConfirmation}
+                className={this.handleInputError(errors, 'password')}
               />
 
-              <Button color="orange" fluid size="large">
+              <Button  disabled={loading} className={loading ? "loading": ''} color="orange" fluid size="large">
                 Submit
               </Button>
             </Segment>
           </Form>
           {/* if errors exist then show errors */}
-          {this.state.errors.length > 0 && (
+          {errors.length > 0 && (
               <Message error>
               <h3>Error</h3>
-              {this.displayErrors(this.state.errors)}
+              {this.displayErrors(errors)}
               </Message>
           )}
           <Message>
