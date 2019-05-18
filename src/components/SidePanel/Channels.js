@@ -69,12 +69,16 @@ class Channels extends Component {
       }
   };
 
+  changeChannel = (channel) => {
+    this.props.setCurrentChannel(channel)
+}
+
 //   Note that we used parenthesis here because of implicit return
   displayChannels = (channels) => (
       channels.length > 0 && channels.map(channel => (
           <Menu.Item
           key={channel.id}
-          onClick={() => console.log(channel)}
+          onClick={() => changeChannel(channel)}
           name={channel.name}
           style={{ opacity: 0.7 }}
           >
@@ -82,6 +86,8 @@ class Channels extends Component {
           </Menu.Item>
       ))
   );
+
+ 
 
   render() {
     const { channels, modal } = this.state;
