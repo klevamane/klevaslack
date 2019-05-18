@@ -28,7 +28,6 @@ class Root extends React.Component {
         // detects whether we have a user in our app
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
-                console.log('**isuser - - ',user);
                 // the connect, and mapDispatchToProps takes the 
                 // setUser action and put it on the props object of the component that is being wrapped with connect
                 this.props.setUser(user)
