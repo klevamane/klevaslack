@@ -18,7 +18,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import rootReducer from './reducers';
 
 // Actions
-import { setUser } from './actions';
+import { setUser, clearUser } from './actions';
 import Spinner from './Spinner';
 
 const store = createStore(rootReducer, composeWithDevTools());
@@ -28,21 +28,27 @@ class Root extends React.Component {
         // detects whether we have a user in our app
         firebase.auth().onAuthStateChanged(user => {
             if(user) {
+                console.log('**isuser - - ',user);
                 // the connect, and mapDispatchToProps takes the 
                 // setUser action and put it on the props object of the component that is being wrapped with connect
                 this.props.setUser(user)
                 this.props.history.push('/');  
+            } else {
+                console.log('gotherr')
+                this.props.clearUser() ;
+                this.props.history.push('login');
+                
             }
         })
     }
     render() { 
         return this.props.isLoading ? <Spinner /> : (
-        <switch>
+        <Switch>
             {/* exact keyword ensures that the right route is matched */}
             <Route exact path="/" component={App} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
-        </switch>
+        </Switch>
         );
     }
 }
@@ -50,8 +56,8 @@ class Root extends React.Component {
 const mapStateToProps = state => ({
     isLoading: state.user.isLoading
 });
-
-const RootWithAuth = withRouter(connect(mapStateToProps, { setUser })(Root));
+// note that the functions { setUser, clearUser, ..}are mapDispatchToProps
+const RootWithAuth = withRouter(connect(mapStateToProps, { setUser, clearUser })(Root));
 
 ReactDOM.render(
   <Provider store={store}>
