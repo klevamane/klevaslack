@@ -13,6 +13,18 @@ class Channels extends Component {
     modal: false
   };
 
+  componentDidMount() {
+      this.addListeners();
+  }
+
+  addListeners = () => {
+      let loadedChannels = [];
+      this.state.channelsRef.on('child_added', snap => {
+          loadedChannels.push(snap.val());
+          this.setState({ channels: loadedChannels });
+      })
+  }
+
   addChannel = () => {
       const { channelsRef, channelDetails, channelName, user } = this.state;
       const key = channelsRef.push().key // should provide a unique id for evey new channel added
@@ -57,6 +69,20 @@ class Channels extends Component {
       }
   };
 
+//   Note that we used parenthesis here because of implicit return
+  displayChannels = (channels) => (
+      channels.length > 0 && channels.map(channel => (
+          <Menu.Item
+          key={channel.id}
+          onClick={() => console.log(channel)}
+          name={channel.name}
+          style={{ opacity: 0.7 }}
+          >
+           # {channel.name}   
+          </Menu.Item>
+      ))
+  );
+
   render() {
     const { channels, modal } = this.state;
     return (
@@ -68,6 +94,7 @@ class Channels extends Component {
             </span>
             ({channels.length})<Icon name="add" onClick={this.openModal} />
           </Menu.Item>
+          {this.displayChannels(channels)}
         </Menu.Menu>
         {/* Add channel modal */}
         <Modal basic open={modal} onClose={this.closeModal}>
