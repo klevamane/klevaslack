@@ -23,6 +23,13 @@ class Channels extends Component {
       this.addListeners();
   }
 
+//   When our component unmounts eg we go to a different route,
+//   we need to remove the listeners we set up initially
+// we don't need to listen for an event that isn't going to take place
+  componentWillUnmount() {
+    this.removeListeners();
+  }
+
   setFirstChannel = () => {
     const firstChannel = this.state.channels[0];
     if(this.state.firstLoad && this.state.channels.length > 0) {
@@ -39,6 +46,10 @@ class Channels extends Component {
           loadedChannels.push(snap.val());
           this.setState({ channels: loadedChannels }, () => this.setFirstChannel());
       })
+  }
+
+  removeListeners = () => {
+      this.state.channelsRef.off();
   }
 
   addChannel = () => {
